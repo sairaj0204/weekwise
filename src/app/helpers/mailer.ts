@@ -76,13 +76,15 @@ export const sendMail = async ({
     emailType, 
     userId, 
     taskTitle, 
-    startTime // 🚀 NEW: Fields for reminder email
+    startTime,
+    taskId // 🚀 NEW: Fields for reminder email
 }: {
     email: string;
     emailType: "VERIFY" | "RESET" | "REMINDER"; // Explicit types
     userId: string;
     taskTitle?: string;
     startTime?: string;
+    taskId?: string;
 }) => {
     const domain = process.env.DOMAIN || "localhost:3000";
 
@@ -134,20 +136,47 @@ export const sendMail = async ({
 
         if (emailType === 'REMINDER' && taskTitle && startTime) {
             // 🚀 REMINDER EMAIL CONTENT
-            mailOptions.subject = `🔔 Task Reminder: ${taskTitle} starts soon!`;
-            mailOptions.html = `
-                <html>
-                    <body>
-                    <p>
-                    👋 **Hello!**
-                    <br><br>
-                    Just a quick reminder that your task: <strong>${taskTitle}</strong> is scheduled to begin in the next two minutes at <strong>${startTime}</strong>.
-                    <br><br>
-                    Get ready and have a productive day!
-                    </p>
-                    </body>
-                </html>
-            `;
+            // Inside sendMail function, for emailType === 'REMINDER'
+
+mailOptions.subject = `🔔 Task Reminder: ${taskTitle} starts soon!`;
+mailOptions.html = `
+    <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+                <p style="font-size: 16px;">
+                👋 **Hello!**
+                <br><br>
+                Just a quick reminder that your task: <strong>${taskTitle}</strong> is scheduled to begin in the next two minutes at <strong>${startTime}</strong>.
+                </p>
+                <p style="font-size: 16px;">
+                Get ready and have a productive day!
+                </p>
+                
+                <div style="text-align: center; margin-top: 25px;">
+                    <a 
+                        href="https://weekwise-psei.vercel.app/api/schedule/startEvent?taskId=${taskId}"
+                        target="_blank"
+                        style="
+                            display: inline-block;
+                            padding: 10px 20px;
+                            color: #ffffff;
+                            background-color: #10b981; /* Tailwind green-500 */
+                            border-radius: 6px;
+                            text-decoration: none;
+                            font-weight: bold;
+                        "
+                    >
+                        Start Task
+                    </a>
+                </div>
+                
+                <p style="font-size: 12px; color: #777; margin-top: 20px;">
+                    Note: Clicking the button will log the start time in the system.
+                </p>
+            </div>
+        </body>
+    </html>
+`;
         } else if (hashedToken !== null) {
             // VERIFY and RESET EMAIL CONTENT
             const action = emailType === 'VERIFY' ? "verification" : "password reset";

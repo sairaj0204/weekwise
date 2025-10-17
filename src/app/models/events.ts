@@ -23,6 +23,7 @@ interface IEvent {
   // Optional materials/notes
   materials: string[];
   isNotified: Boolean;
+  isCompleted: Boolean;
 }
 
 // Document interface
@@ -59,7 +60,8 @@ const eventSchema = new Schema<IEventDocument>({
   // Array of strings for materials
   materials: { type: [String], default: [] },
 
-  isNotified: {type: Boolean, default:false}
+  isNotified: {type: Boolean, default:false},
+  isCompleted: {type: Boolean, default:false}
   
 }, { 
     // Add created/modified dates

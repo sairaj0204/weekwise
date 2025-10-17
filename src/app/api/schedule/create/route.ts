@@ -13,6 +13,7 @@ interface IEventData {
     end_time: string;
     materials: string[];
     isNotified: Boolean;
+    isCompleted: Boolean;
 }
 
 interface IDailySchedule {
@@ -83,7 +84,8 @@ export async function POST(req: NextRequest) {
                     startTime: event.start_time,
                     endTime: event.end_time,
                     materials: event.materials || [],
-                    isNotified: false
+                    isNotified: false,
+                    isCompleted: false
                 });
             }
         }

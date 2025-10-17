@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "../../../dbConfig/dbConfig"; // Adjust path
 import EventModel from "../../../models/events";      // Adjust path
-import User from "../../../models/userModel";         // Adjust path
 import { sendMail } from "../../../helpers/mailer";   // Adjust path
 
 // Define a key for the user object when populated, to access fields
@@ -72,6 +71,8 @@ export async function GET(request: NextRequest) {
               taskTitle: event.title,
               startTime: event.startTime,
               userId: user._id.toString(),
+              taskId: event._id.toString()
+
             });
 
             // Mark event as notified
