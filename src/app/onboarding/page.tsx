@@ -463,6 +463,7 @@
 import { useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import SpeakingAnimation from '../components/animation';
+import { useRouter } from 'next/navigation';
 
 // Define the interface for the structure expected by the schedule API route
 interface SchedulePayload {
@@ -474,6 +475,7 @@ interface SchedulePayload {
 }
 
 export default function Onboarding() {
+  const router = useRouter();
   const [response, setResponse] = useState('');
   const [question, setQuestion] = useState('');
   const [previous, setPrevious] = useState<{ client: string; model: string }[]>([]);
@@ -619,6 +621,7 @@ Current date: ${date}
           if (res.ok) {
               setResponse(`✅ Schedule saved! ID: ${data.scheduleId}`);
               console.log('Schedule Saved to DB:', data);
+              router.push("/schedule/week");
           } else {
               setResponse(`❌ DB Save Failed: ${data.message || 'Check console for details.'}`);
               console.error('DB Save Error:', data.message || 'Unknown save error');
@@ -649,63 +652,67 @@ Current date: ${date}
     <div className="min-h-screen w-full flex flex-col lg:flex-row items-center justify-between px-8 py-10 bg-gradient-to-br from-[#0b0f1a] via-[#101826] to-[#0c0e14] text-white gap-8">
       
       {/* AI Chat Panel */}
-      <div className="flex flex-col items-center justify-start w-full lg:w-[60%] bg-[#111827]/70 backdrop-blur-2xl p-10 rounded-3xl border border-[#1f2937] shadow-[0_0_40px_rgba(0,255,255,0.1)]">
+      <div className="min-h-screen w-full flex items-center justify-center px-4 py-10 bg-gradient-to-br from-[#0b0f1a] via-[#101826] to-[#0c0e14] text-white">
+      
+    {/* AI Chat Panel - Centered and full focus */}
+    <div className="flex flex-col items-center w-full max-w-2xl bg-[#111827] bg-opacity-90 backdrop-blur-sm p-8 md:p-12 rounded-3xl border border-[#1f2937] shadow-[0_0_60px_rgba(0,255,255,0.15)]">
         
-        {/* Animation Section */}
+        {/* Header and Title */}
+        <h1 className="text-4xl font-extrabold text-center mb-10 tracking-wider bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            Welcome to WeekWise
+        </h1>
+        
+        {/* Animation Area */}
         <div className="w-full flex justify-center mb-10">
-          <div className="scale-[1.5] max-w-[400px]">
-            <SpeakingAnimation 
-              isPlaying={isAnimationOn}
-              isListening={isListeningMode} 
-            />
-          </div>
+            <div className="scale-[1.5] max-w-[400px]">
+                <SpeakingAnimation 
+                    isPlaying={isAnimationOn}
+                    isListening={isListeningMode} 
+                />
+            </div>
         </div>
 
-        {/* Chat Section */}
-        <div className="w-full max-w-lg">
-          <h1 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-            AI Schedule Assistant
-          </h1>
-
-          <div className="flex items-center gap-2 mb-4">
-            <input
-              type="text"
-              placeholder="Ask me to plan your day..."
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              className="flex-1 p-3 rounded-xl bg-[#0d121f] border border-[#1e293b] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            />
-            <button
-              onClick={getAnswer}
-              disabled={loading}
-              className="px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all disabled:opacity-50"
-            >
-              {loading ? 'Thinking...' : 'Send'}
-            </button>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[#0e1625] border border-[#1e293b] text-gray-200 min-h-[120px] mb-4 whitespace-pre-wrap">
-            {response || 'Start chatting with the AI...'}
-          </div>
-
-          <div className="flex justify-center gap-4">
-            <button
-              onClick={() => setIsAnimationOn((p) => !p)}
-              className="px-6 py-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-600 text-white font-semibold shadow-lg hover:from-cyan-300 hover:to-blue-500 transition-all"
-            >
-              {isAnimationOn ? 'Stop Animation' : 'Start Animation'}
-            </button>
-            <button
-              onClick={() => setIsListeningMode((l) => !l)}
-              className="px-6 py-2 rounded-full bg-gradient-to-r from-fuchsia-500 to-pink-600 text-white font-semibold shadow-lg hover:from-fuchsia-400 hover:to-pink-500 transition-all"
-            >
-              {isListeningMode ? 'Stop Listening' : 'Start Listening'}
-            </button>
-          </div>
+        {/* Current AI Response Display (Enhanced BG) */}
+        <div className="w-full mb-8">
+            <label className="block text-sm font-medium text-cyan-400 mb-2 text-left">AI Assistant Response</label>
+            
+            {/* The primary response area with a distinct, light background for contrast */}
+            <div className="p-4 md:p-6 rounded-xl bg-gray-900 border border-cyan-600 shadow-xl min-h-[120px] whitespace-pre-wrap">
+                <p className="font-light text-xl text-gray-100">
+                    {/* Display only the current response */}
+                    {response || 'Start by telling me your scheduling needs...'}
+                </p>
+            </div>
         </div>
-      </div>
 
-      {/* Schedule Panel */}
+        {/* Input and Send Button */}
+        <div className="w-full">
+            <label htmlFor="user-input" className="block text-sm font-medium text-gray-400 mb-2 text-left">Your Message</label>
+            <div className="flex items-center gap-3">
+                <input
+                    id="user-input"
+                    type="text"
+                    placeholder="E.g., Plan a day with 3 hours work and 1 hour exercise..."
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !loading) getAnswer();
+                    }}
+                    className="flex-1 p-4 rounded-xl bg-[#0d121f] border border-[#1e293b] text-white placeholder-gray-500 text-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-shadow duration-200"
+                />
+                <button
+                    onClick={getAnswer}
+                    disabled={loading || !question.trim()}
+                    className="px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-semibold text-lg hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg disabled:opacity-50 disabled:bg-gray-700"
+                >
+                    {loading ? '...' : 'Send'}
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+      {/* Schedule Panel
       <div className="w-full lg:w-[40%] bg-[#111827]/70 backdrop-blur-2xl p-8 rounded-3xl border border-[#1f2937] shadow-[0_0_40px_rgba(0,255,255,0.08)] overflow-y-auto max-h-[85vh]">
         <h2 className="text-2xl font-semibold text-cyan-400 mb-4 flex items-center gap-2">
           📅 Your Schedule
@@ -742,7 +749,7 @@ Current date: ${date}
         ) : (
           <p className="text-gray-500 text-center">No schedule yet. Ask me to create one!</p>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -1,13 +1,14 @@
 "use client"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Navbar from "./components/Navbar"
 
 export default function HomePage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [loadingUser, setLoadingUser] = useState(true)
 
-  // Fetch user profile using native fetch
+  // Fetch user profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -28,37 +29,69 @@ export default function HomePage() {
   const goSignup = () => router.push("/signup")
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+    <>
+    <Navbar/>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-700 via-indigo-800 to-black text-white px-6">
+      {/* Loading State */}
+      {loadingUser && (
+        <p className="text-lg text-gray-300">Loading...</p>
+      )}
+
+      {/* Logged Out / Public Landing */}
       {!loadingUser && !user && (
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Welcome to WeekWise</h1>
-          <p className="mb-6">Please login or signup to continue.</p>
-          <button
-            onClick={goLogin}
-            className="mr-3 px-6 py-2 bg-indigo-600 text-white rounded-lg"
-          >
-            Login
-          </button>
-          <button
-            onClick={goSignup}
-            className="px-6 py-2 bg-green-600 text-white rounded-lg"
-          >
-            Signup
-          </button>
+        <div className="text-center max-w-2xl">
+          
+          <div className="mb-6 flex justify-center">
+  <span className="inline-flex items-center bg-gray-800 px-7 py-3 rounded-full font-bold">
+    <span className="bg-gradient-to-r from-pink-400 via-yellow-200 to-green-300 bg-clip-text text-transparent">
+      ✨ Work smarter with WeekWise
+    </span>
+  </span>
+</div>
+
+
+          <h3 className="text-3xl font-bold text-amber-50">
+            Where Discipline Meets Intelligence.
+          </h3>
+          
+          <br/>
+          <p className="text-lg mb-8 text-gray-200">
+            Your AI-powered task manager that helps you plan smarter, stay focused, 
+            and achieve more — every week.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={goSignup}
+              className="px-8 py-3 text-white bg-green-700 font-semibold rounded-xl hover:bg-green-200 transition"
+            >
+              Get Started
+            </button>
+            <button
+              onClick={goLogin}
+              className="px-8 py-3 border border-white font-semibold rounded-xl hover:bg-green-700 hover:text-white transition"
+            >
+              Log In
+            </button>
+          </div>
         </div>
       )}
 
+      {/* Logged In View */}
       {user && (
-        <div className="text-center text-black">
-          <h1 className="text-3xl font-bold mb-4">Hello, {user.userName}</h1>
-          <p>Your email: {user.email}</p>
-          <p>
-            {user.isVerified
-              ? "Email Verified ✅"
-              : "Please verify your email. Check your inbox!"}
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-3">Hello, {user.userName} 👋</h1>
+          <p className="text-gray-200 mb-2">Email: {user.email}</p>
+          <p className="text-gray-300">
+            {user.isVerified ? (
+              <span>Email Verified ✅</span>
+            ) : (
+              <span>Please verify your email. Check your inbox ✉️</span>
+            )}
           </p>
         </div>
       )}
     </div>
+    </>
   )
 }
