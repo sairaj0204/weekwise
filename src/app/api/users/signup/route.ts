@@ -12,7 +12,7 @@ connect()
 export async function POST(request: NextRequest) {
     try {
         const reqBody = await request.json(); // <-- await here
-        const { userName, email, password } = reqBody;
+        const { userName, email, password, timezone } = reqBody;
 
         // validation
         console.log(reqBody);
@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
                 userName,
                 email,
                 password: hash,
+                timezone,
             })
             const savedUser = await newUser.save()
             console.log(savedUser);
