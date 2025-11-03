@@ -144,7 +144,7 @@ mailOptions.html = `
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
                 <p style="font-size: 16px;">
-                👋 **Hello!**
+                👋 Hello!
                 <br><br>
                 Just a quick reminder that your task: <strong>${taskTitle}</strong> is scheduled to begin in the next two minutes at <strong>${startTime}</strong>.
                 </p>
@@ -185,7 +185,7 @@ mailOptions.html = `
                 <html>
                     <body>
                     <p>
-                    Your **OTP** for ${action} in WeekWise is:
+                    Your OTP for ${action} in WeekWise is:
                     <br><br>
                     <h1>${hashedToken}</h1>
                     </p>
